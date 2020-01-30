@@ -1,0 +1,9 @@
+java_binary(
+    name = "ProductLauncher",
+    srcs = [
+        "ProductLauncher.java",
+        "ProductoService.java",
+    ],
+    main_class = "productos.ProductLauncher",
+    deps = ["//:sources"],
+)

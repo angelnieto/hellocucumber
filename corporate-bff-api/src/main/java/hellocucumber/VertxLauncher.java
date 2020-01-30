@@ -1,4 +1,4 @@
-package src.main.java.hellocucumber;
+package hellocucumber;
 
 import io.vertx.core.Vertx;
 
