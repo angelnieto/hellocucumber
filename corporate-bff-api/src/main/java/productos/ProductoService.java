@@ -23,6 +23,8 @@ public class ProductoService extends AbstractVerticle {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
+        //router.route().handler(this::handleHello);
+        router.get("/").handler(this::handleHello);
         router.get("/products/:productID").handler(this::handleGetProduct);
         router.put("/products/:productID").handler(this::handleAddProduct);
         router.get("/products").handler(this::handleListProducts);
@@ -49,6 +51,7 @@ public class ProductoService extends AbstractVerticle {
 
     private void handleAddProduct(RoutingContext routingContext) {
         String productID = routingContext.request().getParam("productID");
+        String productBodyID = routingContext.getBodyAsJson().getString("id");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
             sendError(400, response);
@@ -56,15 +59,18 @@ public class ProductoService extends AbstractVerticle {
             JsonObject product = routingContext.getBodyAsJson();
             if (product == null) {
                 sendError(400, response);
-            } else {
+            } else if(productID.equals(productBodyID)){
                 products.put(productID, product);
                 response.end();
+            } else{
+                sendError(417, response);
             }
         }
     }
 
     private void handleAddProductPost(RoutingContext routingContext) {
         String productID = routingContext.request().getParam("productID");
+        String productBodyID = routingContext.getBodyAsJson().getString("id");
         HttpServerResponse response = routingContext.response();
         if (productID == null) {
             sendError(400, response);
@@ -72,9 +78,11 @@ public class ProductoService extends AbstractVerticle {
             JsonObject product = routingContext.getBodyAsJson();
             if (product == null) {
                 sendError(400, response);
-            } else {
+            }  else if(productID.equals(productBodyID)){
                 products.put(productID, product);
                 response.end();
+            } else{
+                sendError(417, response);
             }
         }
     }
@@ -108,6 +116,14 @@ public class ProductoService extends AbstractVerticle {
 
     private void addProduct(JsonObject product) {
         products.put(product.getString("id"), product);
+    }
+
+    private void handleHello(RoutingContext routingContext) {
+        routingContext.response().putHeader("content-type","text/html");
+        String msg = "Hello ";
+        String agt = "Vert-x";
+        msg = msg + agt + " World!";
+        routingContext.response().end("<html>" + msg + "</html>");
     }
 
 }
