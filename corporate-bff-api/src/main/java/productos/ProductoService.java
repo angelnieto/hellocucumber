@@ -26,6 +26,8 @@ public class ProductoService extends AbstractVerticle {
         router.get("/products/:productID").handler(this::handleGetProduct);
         router.put("/products/:productID").handler(this::handleAddProduct);
         router.get("/products").handler(this::handleListProducts);
+        router.post("/products/:productID").handler(this::handleAddProductPost);
+        router.delete("/products/:productID").handler(this::handleAddProductDelete);
 
         vertx.createHttpServer().requestHandler(router).listen(8080);
     }
@@ -58,6 +60,33 @@ public class ProductoService extends AbstractVerticle {
                 products.put(productID, product);
                 response.end();
             }
+        }
+    }
+
+    private void handleAddProductPost(RoutingContext routingContext) {
+        String productID = routingContext.request().getParam("productID");
+        HttpServerResponse response = routingContext.response();
+        if (productID == null) {
+            sendError(400, response);
+        } else {
+            JsonObject product = routingContext.getBodyAsJson();
+            if (product == null) {
+                sendError(400, response);
+            } else {
+                products.put(productID, product);
+                response.end();
+            }
+        }
+    }
+
+    private void handleAddProductDelete(RoutingContext routingContext) {
+        String productID = routingContext.request().getParam("productID");
+        HttpServerResponse response = routingContext.response();
+        if (productID == null) {
+            sendError(400, response);
+        } else {
+            products.remove(productID);
+            response.end();
         }
     }
 
